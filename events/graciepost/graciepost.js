@@ -35,6 +35,7 @@ module.exports = class GraciePost {
           name: meta.artist || "",
           icon_url: meta.pfp || "",
         },
+        description: meta.desc || "",
         fields: [
           {
             name: "Post link:",
