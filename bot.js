@@ -59,5 +59,6 @@ client
 
 client.registry
 	.registerDefaults()
+	.registerCommandsIn(path.join(__dirname, 'commands'));
 
 client.login(config.token)
