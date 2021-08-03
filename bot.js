@@ -52,7 +52,7 @@ client
 		`);
 	})
 	.on('message', async (message) => {
-		if (message.content.includes("https://") || message.content.includes("http://") || message.attachments.size || message.embeds.size) {
+		if (message.content.includes("https://") || message.content.includes("http://") || message.attachments.size || message.embeds.length) {
 			message.react("💛")
 		}
 	});
