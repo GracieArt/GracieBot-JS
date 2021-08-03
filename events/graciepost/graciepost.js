@@ -1,11 +1,10 @@
 const fs = require("fs")
 
 module.exports = class GraciePost {
-  constructor(client) {
+  constructor(client, postFile) {
     this.client = client
+    this.postFile = postFile
     this.shouldWatch = true
-    this.postFile = "./events/graciepost/post.json"
-    this.cloudCastle = this.client.guilds.fetch("738591664502997004")
   }
 
   watch() {

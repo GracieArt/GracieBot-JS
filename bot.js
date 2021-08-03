@@ -16,7 +16,7 @@ client
 	.on('ready', () => {
 		console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
 
-		graciepost = new GraciePost(client)
+		graciepost = new GraciePost(client, config.graciepost.postFile)
 		graciepost.watch()
 	})
 	.on('disconnect', () => { console.warn('Disconnected!'); })
