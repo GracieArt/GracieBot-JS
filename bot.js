@@ -50,6 +50,11 @@ client
 			${enabled ? 'enabled' : 'disabled'}
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
+	})
+	.on('message', async (message) => {
+		if (message.content.includes("https://") || message.content.includes("http://") || message.attachments.size) {
+			message.react("💛")
+		}
 	});
 
 client.registry
