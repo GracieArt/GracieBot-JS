@@ -1,5 +1,8 @@
 {
   "prefix":   "g!",
   "ownerID":  "262387681474904065",
-  "token":    ""
+  "token":    "",
+  "graciepost": {
+    "postFile": ""
+  }
 }
