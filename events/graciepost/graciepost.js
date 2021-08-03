@@ -30,7 +30,7 @@ module.exports = class GraciePost {
       channel.send(meta.postLink)
     } else {
       if (meta.desc.length > 280) {
-        meta.desc = meta.desc.substring(0, 280) + " ..."
+        meta.desc = meta.desc.substring(0, 280) + "..."
       }
       let embed = {
         title:  meta.title || "",
