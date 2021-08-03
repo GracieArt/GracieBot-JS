@@ -29,12 +29,16 @@ module.exports = class GraciePost {
     if (meta.overrideEmbed) {
       channel.send(meta.postLink)
     } else {
+      if (meta.desc.length > 280) {
+        meta.desc = meta.desc.substring(0, 280) + " ..."
+      }
       let embed = {
         title:  meta.title || "",
         author: {
           name: meta.artist || "",
           icon_url: meta.pfp || "",
         },
+        description: meta.desc || "",
         fields: [
           {
             name: "Post link:",
@@ -48,6 +52,7 @@ module.exports = class GraciePost {
           text: "Retrieved from " + meta.siteName
         }
       }
+
       channel.send({embed})
     }
   }
