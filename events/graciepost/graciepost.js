@@ -8,19 +8,10 @@ module.exports = class GraciePost {
   }
 
   watch() {
+    console.log("GraciePost: Watching for changes to " + this.postFile)
     fs.watchFile(this.postFile, () => {
-      if (this.shouldWatch) {
-        console.log("File changed")
-        this.shouldWatch = false
-
-        this.post(JSON.parse(fs.readFileSync(this.postFile)))
-
-
-        setTimeout(() => {
-          this.shouldWatch = true
-          console.log("watching...")
-        }, 2000)
-      }
+      console.log("GraciePost: File changed")
+      this.post(JSON.parse(fs.readFileSync(this.postFile)))
     })
   }
 
