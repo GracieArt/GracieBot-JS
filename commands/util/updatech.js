@@ -1,7 +1,7 @@
 const commando = require("discord.js-commando")
 const fs = require("fs")
 
-module.exports = class ChannelCommand extends commando.Command {
+module.exports = class UpdatechCommand extends commando.Command {
 	constructor(client) {
 		super(client, {
 			name: 'updatech',
