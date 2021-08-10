@@ -41,7 +41,7 @@ module.exports = class GraciePost {
           url:  meta.imageLink
         },
         footer: {
-          text: "Retrieved from " + meta.siteName
+          text: "Retrieved from " + meta.siteName + " using GraciePost"
         }
       }
 

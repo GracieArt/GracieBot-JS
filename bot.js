@@ -53,12 +53,14 @@ client
 	})
 	.on('message', async (message) => {
 		if (message.content.includes("https://") || message.content.includes("http://") || message.attachments.size || message.embeds.length) {
+			if (message.embeds.length && !message.embeds[0].footer.text.includes("GraciePost")) { return }
 			message.react("💛")
 		}
 	});
 
 client.registry
 	.registerDefaults()
-	.registerCommandsIn(path.join(__dirname, 'commands'));
+	.registerGroup("fun")
+	.registerCommandsIn(path.join(__dirname, 'commands'))
 
 client.login(config.token)
