@@ -3,6 +3,7 @@ const path = require('path')
 const config = require('./utils/config.js')
 
 const GraciePost = require("./events/graciepost/graciepost.js")
+const LikeButton = require("./events/like-button.js")
 
 const client = new commando.Client({
 	commandPrefix: config.prefix,
@@ -16,7 +17,10 @@ client
 	.on('ready', () => {
 		console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
 
-		graciepost = new GraciePost(client, config.graciepost.postFile)
+		likeButton = new LikeButton(client)
+		likeButton.watch()
+
+		graciepost = new GraciePost(client, config.graciepost.postFile, likeButton)
 		graciepost.watch()
 	})
 	.on('disconnect', () => { console.warn('Disconnected!'); })
@@ -51,18 +55,6 @@ client
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
 	})
-	.on('message', async (message) => {
-		if (message.content.includes("https://") || message.content.includes("http://") || message.attachments.size || message.embeds.length) {
-			if (!message.author.bot
-				|| (message.author.bot
-					&& message.author.id == "744747743746064394"
-					&& message?.embeds[0]?.footer.text.includes("GraciePost")
-				)
-			) {
-				message.react("💛")
-			}
-		}
-	});
 
 client.registry
 	.registerDefaults()

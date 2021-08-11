@@ -1,9 +1,10 @@
 const fs = require("fs")
 
 module.exports = class GraciePost {
-  constructor(client, postFile) {
+  constructor(client, postFile, likeButton) {
     this.client = client
     this.postFile = postFile
+    this.likeButton = likeButton
     this.shouldWatch = true
   }
 
@@ -19,7 +20,7 @@ module.exports = class GraciePost {
     let channel = this.client.channels.cache.get(meta.channel)
 
     if (meta.overrideEmbed) {
-      channel.send(meta.postLink)
+      channel.send(meta.postLink).then(this.likeButton.addButton)
     } else {
       if (meta.desc && meta.desc.length > 180) {
         meta.desc = meta.desc.substring(0, 180) + "..."
@@ -45,7 +46,7 @@ module.exports = class GraciePost {
         }
       }
 
-      channel.send({embed})
+      channel.send({embed}).then(this.likeButton.addButton)
     }
   }
 }
