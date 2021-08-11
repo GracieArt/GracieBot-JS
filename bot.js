@@ -53,8 +53,14 @@ client
 	})
 	.on('message', async (message) => {
 		if (message.content.includes("https://") || message.content.includes("http://") || message.attachments.size || message.embeds.length) {
-			if (message.embeds.length && message.embeds[0].footer && !message.embeds[0].footer.text.includes("GraciePost")) { return }
-			message.react("💛")
+			if (!message.author.bot
+				|| (message.author.bot
+					&& message.author.id == "744747743746064394"
+					&& message?.embeds[0]?.footer.text.includes("GraciePost")
+				)
+			) {
+				message.react("💛")
+			}
 		}
 	});
 
