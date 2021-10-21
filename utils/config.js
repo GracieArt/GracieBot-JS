@@ -1,4 +1,5 @@
 var config = require("../config.json")
-config.token = process.env.GB_TOKEN
-config.graciepost.postFile = process.env.GB_POSTFILE
+var sysConfig = require("/etc/graciebot/conf.json")
+config.token = sysConfig.token
+config.graciepost.postFile = sysConfig.postFile
 module.exports = config
