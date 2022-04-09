@@ -1,8 +1,12 @@
 {
+  "sysConfig": "/etc/graciebot/conf.json",
   "prefix":   "g!",
   "ownerID":  "262387681474904065",
   "token":    "",
-  "graciepost": {
-    "postFile": ""
+  "graciePost": {
+    "port": "30034",
+    "key": "",
+    "guildID": "",
+    "charLimit": "180"
   }
 }

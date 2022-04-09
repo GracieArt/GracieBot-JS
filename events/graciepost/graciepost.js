@@ -4,47 +4,104 @@
 const fs = require("fs")
 const http = require("http")
 
-// the cutoff point if the description of an embed is too long
-const charLimit = 180
-
-// the port graciebot will be listening to for posts
-const port = 30034 // booba teehee
-
-
 
 module.exports = class GraciePost {
-  constructor(client, key, likeButton) {
+  constructor(client, config, likeButton) {
     this.client = client
-    this.key = key
+    this.config = config
     this.likeButton = likeButton
-    this.shouldWatch = true
+    this.guild = client.guilds.resolve(this.config.guildID)
   }
 
 
   // Starts listening for posts
   watch() {
-    this.server = http.createServer((req, res) => {
-      let data = ''
-      req.on('data', chunk => {
-        data += chunk
-      })
-      req.on('end', () => {
-        data = JSON.parse(data)
+    this.server = http.createServer(async (req, res) => {
+      let response = await this.handleRequest(req)
+      res.writeHead( response.status, { 'Content-Type' : response.type } )
+      res.write( response.body )
+      res.end()
+    }).listen(this.config.port)
+    console.log(`GraciePost: listening to port ${this.config.port}`)
+  }
 
-        if (data.key !== this.key) {
-          console.log(`GraciePost: Access denied to incomping post request:`)
-          console.log(req)
-          res.writeHead(403)
-        } else {
-          console.log(`GraciePost: Receieved authentic post request`)
-          res.writeHead(200)
-          this.post(data)
-        }
-        res.end()
-      })
+
+  // Handles the request
+  handleRequest(req) {
+    return new Promise((resolve, reject) => {
+      let data = ''
+
+      switch (req.method) {
+        case 'POST':
+          req.on('data', chunk => {
+            data += chunk
+          })
+
+          req.on('end', () => {
+            data = JSON.parse(data)
+
+            if (data.key !== this.config.key) {
+              console.log(`GraciePost: Access denied to incoming POST request:`)
+              console.log(req)
+              return resolve({
+                status : 403,
+                type   : 'text/plain',
+                body   : 'Access denied'
+              })
+            }
+
+            console.log(`GraciePost: Receieved authentic POST request`)
+            this.post(data)
+            return resolve({
+              status  : 200,
+              type    : 'text/plain',
+              body    : 'Post successful'
+            })
+          })
+          break
+
+
+        case 'GET':
+          console.log(`GraciePost: Fulfilling GET request for channels`)
+
+          let channels = {categories: {}}
+
+          //get categories
+          this.guild.channels.cache.each( (ch) => {
+            if (ch.type == "category") {
+              channels.categories[ch.name] = {}
+              channels.categories[ch.name].name = ch.name
+              channels.categories[ch.name].channels = {}
+            }
+          })
+
+          //get channels in categories
+          this.guild.channels.cache.each( (ch) => {
+            if (ch.type == "text") {
+              let cat = ch.guild.channels.cache.get(ch.parentID)
+              channels.categories[cat.name].channels[ch.name] = {
+                name: ch.name,
+                id:   ch.id
+              }
+            }
+          })
+
+          return resolve({
+            status  : 200,
+            type    : 'application/json',
+            body    : JSON.stringify(channels)
+          })
+          break
+
+
+        default:
+          return resolve({
+            status  : 501,
+            type    : 'text/plain',
+            body    : 'Method not implemented'
+          })
+      }
     })
-    this.server.listen(port)
-    console.log(`GraciePost: listening to port 30034`)
   }
 
 
@@ -98,7 +155,7 @@ module.exports = class GraciePost {
       if (desc.includes('\n\n')) { cutoff = desc.indexOf('\n\n') }
 
       // if it still exceeds the character limit, cut it off!!!
-      if (cutoff > charLimit) { cutoff = charLimit }
+      if (cutoff > this.config.charLimit) { cutoff = this.config.charLimit }
 
       // truncate the string if a cutoff point was set made
       if (cutoff) { embed.description = `${desc.substring(0, cutoff)} ...` }

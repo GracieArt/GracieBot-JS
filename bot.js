@@ -24,7 +24,11 @@ client
 		likeButton.watch()
 
 		// initialize graciepost event
-		graciepost = new GraciePost(client, config.token, likeButton)
+		graciepost = new GraciePost(
+			client,
+			config.graciePost,
+			likeButton
+		)
 		graciepost.watch()
 	})
 
