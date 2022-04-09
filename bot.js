@@ -1,3 +1,5 @@
+// Initialization of the bot
+
 const commando = require('discord.js-commando')
 const path = require('path')
 const config = require('./utils/config.js')
@@ -10,21 +12,32 @@ const client = new commando.Client({
 	owner: config.owner
 });
 
+
+// Set up all the events
 client
-	.on('error', console.error)
-	.on('warn', console.warn)
-	.on('debug', console.log)
+	// Once graciebot is logged in and ready to recieve commands
 	.on('ready', () => {
 		console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
 
+		// initialize likebutton event
 		likeButton = new LikeButton(client)
 		likeButton.watch()
 
-		graciepost = new GraciePost(client, config.graciepost.postFile, likeButton)
+		// initialize graciepost event
+		graciepost = new GraciePost(client, config.token, likeButton)
 		graciepost.watch()
 	})
+
+	// Disconnect/Reconnect
 	.on('disconnect', () => { console.warn('Disconnected!'); })
 	.on('reconnecting', () => { console.warn('Reconnecting...'); })
+
+	// Errors/Warnings/Notices
+	.on('error', console.error)
+	.on('warn', console.warn)
+	.on('debug', console.log)
+
+	// Command-specific errors/warnings/notices
 	.on('commandError', (cmd, err) => {
 		if(err instanceof commando.FriendlyError) return;
 		console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
@@ -56,9 +69,13 @@ client
 		`);
 	})
 
+
+// Register the commands
 client.registry
 	.registerDefaults()
 	.registerGroup("fun")
 	.registerCommandsIn(path.join(__dirname, 'commands'))
 
+
+// Login
 client.login(config.token)
