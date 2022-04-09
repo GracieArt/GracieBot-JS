@@ -77,7 +77,7 @@ client
 // Register the commands
 client.registry
 	.registerDefaults()
-	//.registerGroup("fun")
+	.registerGroup("fun")
 	.registerCommandsIn(path.join(__dirname, 'commands'))
 
 
