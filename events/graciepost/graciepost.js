@@ -18,7 +18,11 @@ module.exports = class GraciePost {
   watch() {
     this.server = http.createServer(async (req, res) => {
       let response = await this.handleRequest(req)
-      res.writeHead( response.status, { 'Content-Type' : response.type } )
+      res.writeHead( response.status, {
+        'Content-Type' : response.type,
+        'Access-Control-Allow-Origin':  '*',
+        'Access-Control-Allow-Methods': 'POST, GET'
+      })
       res.write( response.body )
       res.end()
     }).listen(this.config.port)
