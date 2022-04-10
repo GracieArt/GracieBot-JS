@@ -10,7 +10,6 @@ module.exports = class GraciePost {
     this.client = client
     this.config = config
     this.likeButton = likeButton
-    this.guild = client.guilds.resolve(this.config.guildID)
   }
 
 
@@ -23,8 +22,7 @@ module.exports = class GraciePost {
         'Access-Control-Allow-Origin':  '*',
         'Access-Control-Allow-Methods': 'POST, GET'
       })
-      res.write( response.body )
-      res.end()
+      res.end( response.body )
     }).listen(this.config.port)
     console.log(`GraciePost: listening to port ${this.config.port}`)
   }
@@ -65,35 +63,55 @@ module.exports = class GraciePost {
           break
 
 
+        // Return channel list
         case 'GET':
           console.log(`GraciePost: Fulfilling GET request for channels`)
 
-          let channels = {categories: {}}
+          let menus = []
 
-          //get categories
-          this.guild.channels.cache.each( (ch) => {
-            if (ch.type == "category") {
-              channels.categories[ch.name] = {}
-              channels.categories[ch.name].name = ch.name
-              channels.categories[ch.name].channels = {}
-            }
+          // get guilds
+          menus.push({
+            name : 'guilds',
+            items : this.client.guilds.cache.map( g => {
+              return {
+                title : g.name,
+                id    : g.id
+              }
+            })
           })
 
-          //get channels in categories
-          this.guild.channels.cache.each( (ch) => {
-            if (ch.type == "text") {
-              let cat = ch.guild.channels.cache.get(ch.parentID)
-              channels.categories[cat.name].channels[ch.name] = {
-                name: ch.name,
-                id:   ch.id
-              }
-            }
+          // get categories
+          menus.push({
+            name  : 'categories',
+            items : this.client.channels.cache
+              .filter(this.isGoodCategory)
+              .map(cat => {
+                return {
+                  title    : cat.name,
+                  id       : cat.id,
+                  parentId : cat.guild.id
+                }
+              })
+          })
+
+          // get channels
+          menus.push({
+            name  : 'channels' ,
+            items : this.client.channels.cache
+              .filter(ch => ch.type === 'text')
+              .map(ch => {
+                return {
+                  title     : ch.name,
+                  id        : ch.id,
+                  parentId  : ch.parentID || ch.guild.id
+                }
+              })
           })
 
           return resolve({
             status  : 200,
             type    : 'application/json',
-            body    : JSON.stringify(channels)
+            body    : JSON.stringify(menus)
           })
           break
 
@@ -106,6 +124,21 @@ module.exports = class GraciePost {
           })
       }
     })
+  }
+
+
+
+  // text if a channel is good to put on the menu
+  isGoodCategory(ch) {
+
+    // only allow text and category channels
+    if (ch.type !== 'category') { return false }
+
+    // Filter out the categories that don't have any text channels
+    let children = ch.children.filter(ch => ch.type === 'text')
+    if (children.size === 0) { return false }
+
+    return true
   }
 
 

@@ -6,7 +6,6 @@
   "graciePost": {
     "port": "30034",
     "key": "",
-    "guildID": "",
     "charLimit": "180"
   }
 }
